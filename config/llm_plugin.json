@@ -1,0 +1,7 @@
+{
+  "llm_enabled": true,
+  "llm_home": "/media/sf_KaliShared/Shared-Tools/llm-android-analyzer-code-olympus-integration",
+  "llm_python": "/home/kali/.venvs/llm-analyzer/bin/python",
+  "llm_model": "gemini-2.5-pro",
+  "llm_artifacts": "/home/kali/olympus-evidence"
+}

@@ -1,0 +1,18 @@
+*.apk
+*.pyc
+.vscode
+__pycache__
+artifacts
+storage/*
+.gemini_cache.json
+
+# --- added 2026-09-11 ---
+*.tar
+*.7z
+*.zip
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+storage/
+apks/

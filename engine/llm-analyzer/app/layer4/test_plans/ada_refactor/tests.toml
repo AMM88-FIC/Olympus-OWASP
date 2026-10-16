@@ -1,0 +1,197 @@
+# Test plan: ADA Refactor
+#
+# This file declares which test cases the verdict engine runs, and how
+# each is executed. Two handler types are supported:
+#
+#   type = "llm"            Reads the markdown prompt file from prompts/
+#                           and runs the standard LLM verdict flow.
+#
+#   type = "programmatic"   Imports the handler from functions/ and calls
+#                           it directly. No model interaction. The handler
+#                           must return a verdict dict matching the LLM
+#                           output shape.
+#
+# The TOML section name (e.g. STORAGE-1-1) is the test_id used throughout
+# the engine. It becomes the output filename (<test_id>.json) and is
+# what the test_filter setting in config.ini matches against.
+#
+# Tests run in the order they appear in this file.
+
+name = "ADA Refactor"
+version = "1.0"
+
+
+# ------------------------------------------------------------
+# 1. STORAGE
+# ------------------------------------------------------------
+
+[tests.STORAGE-1-1]
+type = "llm"
+prompt = "1-STORAGE-1-1-1.md"
+
+[tests.STORAGE-2-1]
+type = "llm"
+prompt = "1-STORAGE-2-1-1.md"
+
+[tests.STORAGE-2-2]
+type = "llm"
+prompt = "1-STORAGE-2-2-1.md"
+
+
+# # ------------------------------------------------------------
+# # 2. CRYPTO
+# # ------------------------------------------------------------
+
+[tests.CRYPTO-1-1]
+type = "llm"
+prompt = "2-CRYPTO-1-1-1.md"
+
+[tests.CRYPTO-1-2]
+type = "llm"
+prompt = "2-CRYPTO-1-2-1.md"
+
+[tests.CRYPTO-1-3]
+type = "llm"
+prompt = "2-CRYPTO-1-3-1.md"
+
+[tests.CRYPTO-2-1]
+type = "llm"
+prompt = "2-CRYPTO-2-1-1.md"
+
+[tests.CRYPTO-2-2]
+type = "llm"
+prompt = "2-CRYPTO-2-2-1.md"
+
+
+# # ------------------------------------------------------------
+# # 3. AUTH
+# # ------------------------------------------------------------
+
+[tests.AUTH-1-1]
+type = "llm"
+prompt = "3-AUTH-1-1-1.md"
+
+
+# # ------------------------------------------------------------
+# # 4. NETWORK
+# # ------------------------------------------------------------
+
+[tests.NETWORK-1-1]
+type = "llm"
+prompt = "4-NETWORK-1-1-1.md"
+
+[tests.NETWORK-1-2]
+type = "llm"
+prompt = "4-NETWORK-1-2-1.md"
+
+[tests.NETWORK-1-3]
+type = "llm"
+prompt = "4-NETWORK-1-3-1.md"
+
+
+# # ------------------------------------------------------------
+# # 5. PLATFORM
+# # ------------------------------------------------------------
+
+[tests.PLATFORM-1-1]
+type = "llm"
+prompt = "5-PLATFORM-1-1-1.md"
+
+[tests.PLATFORM-1-2]
+type = "llm"
+prompt = "5-PLATFORM-1-2-1.md"
+
+[tests.PLATFORM-1-3]
+type = "llm"
+prompt = "5-PLATFORM-1-3-1.md"
+
+[tests.PLATFORM-1-4]
+type = "llm"
+prompt = "5-PLATFORM-1-4-1.md"
+
+[tests.PLATFORM-2-1]
+type = "llm"
+prompt = "5-PLATFORM-2-1-1.md"
+
+[tests.PLATFORM-2-2]
+type = "llm"
+prompt = "5-PLATFORM-2-2-1.md"
+
+[tests.PLATFORM-3-1]
+type = "llm"
+prompt = "5-PLATFORM-3-1-1.md"
+
+
+# ------------------------------------------------------------
+# 6. CODE
+# ------------------------------------------------------------
+
+[tests.CODE-1-1]
+type = "programmatic"
+handler = "code_1_1.run"
+
+[tests.CODE-2-1]
+type = "llm"
+prompt = "6-CODE-2-1-1.md"
+
+[tests.CODE-3-1]
+type = "programmatic"
+handler = "code_3_1.run"
+
+[tests.CODE-3-2]
+type = "llm"
+prompt = "6-CODE-3-2-1.md"
+
+[tests.CODE-3-3]
+type = "llm"
+prompt = "6-CODE-3-3-1.md"
+
+[tests.CODE-3-4]
+type = "llm"
+prompt = "6-CODE-3-4-1.md"
+
+
+# ------------------------------------------------------------
+# 7. RESILIENCE
+# ------------------------------------------------------------
+
+[tests.RESILIENCE-1-1]
+type = "programmatic"
+handler = "resilience_1_1.run"
+
+[tests.RESILIENCE-2-1]
+type = "programmatic"
+handler = "resilience_2_1.run"
+
+[tests.RESILIENCE-3-1]
+type = "programmatic"
+handler = "resilience_3_1.run"
+
+
+# ------------------------------------------------------------
+# 8. PRIVACY
+# ------------------------------------------------------------
+
+[tests.PRIVACY-1-1]
+type = "llm"
+prompt = "8-PRIVACY-1-1-1.md"
+
+[tests.PRIVACY-2-1]
+type = "llm"
+prompt = "8-PRIVACY-2-1-1.md"
+
+[tests.PRIVACY-3-1]
+type = "llm"
+prompt = "8-PRIVACY-3-1-1.md"
+
+# ------------------------------------------------------------
+# 9. PATH
+# ------------------------------------------------------------
+
+[tests.PATH-1-1]
+type = "llm"
+prompt = "9-PATH-1-1.md"
+
+[tests.PATH-1-2]
+type = "llm"
+prompt = "9-PATH-1-2.md"

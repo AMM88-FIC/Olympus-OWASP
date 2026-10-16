@@ -1,0 +1,6 @@
+   *.AppImage
+   *.AppImage.part
+   .venv/
+   __pycache__/
+   *.log
+   squashfs-root/

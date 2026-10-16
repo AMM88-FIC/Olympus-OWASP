@@ -1,0 +1,701 @@
+# Test plan: OWASP MASTG v2 (tests-beta)
+#
+# Source of truth: OWASP MASTG `tests-beta/` (the MASVS v2 / MASWE-based
+# test set). Tests are organized on disk by MASVS category:
+#
+#   prompts/MASVS-<CATEGORY>/MASTG-TEST-XXXX.md     (llm prompts)
+#   functions/MASVS-<CATEGORY>/...                  (programmatic handlers)
+#
+# Handler types:
+#   type = "llm"            Reads the markdown prompt named by `prompt`
+#                           (path is relative to prompts/, so it includes
+#                           the MASVS-<CATEGORY>/ subdirectory) and runs the
+#                           standard LLM verdict flow.
+#   type = "programmatic"   Imports the handler from functions/ and calls it.
+#                           NOTE: the current loader imports handlers as
+#                           functions.<module>, so nested category subdirs
+#                           are not yet importable. None are needed for
+#                           STORAGE; revisit when CODE/RESILIENCE land.
+#
+# The TOML section name (e.g. MASTG-TEST-0202) is the test_id used
+# throughout the engine: it is the output filename (<test_id>.json) and
+# what `test_filter` matches against. It matches the `test_id` each prompt
+# emits in its output JSON.
+#
+# category = "<MASVS category>" is a filter label. The `--test-filter` flag
+# (and [paths].test_filter) matches against BOTH the test_id AND this
+# category, so `--test-filter storage` selects every STORAGE test and
+# `--test-filter crypto` selects every CRYPTO test, while `--test-filter
+# MASTG-TEST-0202` (or just `0202`) still selects a single test. The
+# parallel runner treats the filter as a regex, so `storage|crypto` selects
+# both groups. The label does not affect execution or output.
+#
+# DYNAMIC TESTS: OWASP tests typed dynamic (hooks / device filesystem)
+# cannot run in this static engine; they are implemented here as
+# best-effort STATIC APPROXIMATIONS that always emit
+# needs_dynamic_testing: true (runtime confirmation still required).
+#
+# Tests run in the order they appear in this file.
+
+name = "OWASP MASTG v2 (tests-beta)"
+version = "2026.06"
+
+
+# ============================================================
+#  MASVS-STORAGE
+# ============================================================
+
+# --- MASWE-0007: data in external/shared storage ---
+
+[tests.MASTG-TEST-0200]            # dynamic -> static approximation
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0200.md"
+
+[tests.MASTG-TEST-0201]            # dynamic -> static approximation
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0201.md"
+
+[tests.MASTG-TEST-0202]            # static
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0202.md"
+
+# --- MASWE-0001: sensitive data in logs ---
+
+[tests.MASTG-TEST-0203]            # dynamic -> static approximation
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0203.md"
+
+[tests.MASTG-TEST-0231]            # static
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0231.md"
+
+# --- MASWE-0004: sensitive data in backups ---
+
+[tests.MASTG-TEST-0216]            # dynamic -> static approximation
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0216.md"
+
+[tests.MASTG-TEST-0262]            # static
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0262.md"
+
+# --- MASWE-0006: sensitive data stored unencrypted in the sandbox ---
+
+[tests.MASTG-TEST-0207]            # dynamic -> static approximation (files)
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0207.md"
+
+[tests.MASTG-TEST-0287]            # dynamic -> static approximation (SharedPreferences)
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0287.md"
+
+[tests.MASTG-TEST-0304]            # static (SQLite)
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0304.md"
+
+[tests.MASTG-TEST-0305]            # static (DataStore)
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0305.md"
+
+[tests.MASTG-TEST-0306]            # static (Room)
+type = "llm"
+category = "STORAGE"
+prompt = "MASVS-STORAGE/MASTG-TEST-0306.md"
+
+
+# ============================================================
+#  MASVS-CRYPTO
+# ============================================================
+
+# --- MASWE-0027: predictable / non-random sources of randomness ---
+
+[tests.MASTG-TEST-0204]            # static (insecure PRNG)
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0204.md"
+
+[tests.MASTG-TEST-0205]            # static (non-random sources)
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0205.md"
+
+# --- MASWE-0009: insufficient key sizes ---
+
+[tests.MASTG-TEST-0208]            # static
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0208.md"
+
+# --- MASWE-0014: hardcoded cryptographic keys ---
+
+[tests.MASTG-TEST-0212]            # static
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0212.md"
+
+# --- MASWE-0020: broken algorithms / modes / explicit provider ---
+
+[tests.MASTG-TEST-0221]            # static (broken symmetric algorithms)
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0221.md"
+
+[tests.MASTG-TEST-0232]            # static (broken symmetric modes - ECB)
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0232.md"
+
+[tests.MASTG-TEST-0350]            # dynamic -> static approximation (of 0232)
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0350.md"
+
+[tests.MASTG-TEST-0312]            # static (explicit security provider)
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0312.md"
+
+# --- MASWE-0012: asymmetric keys used for multiple purposes ---
+
+[tests.MASTG-TEST-0307]            # static
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0307.md"
+
+[tests.MASTG-TEST-0308]            # dynamic -> static approximation (of 0307)
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0308.md"
+
+# --- MASWE-0022: reused initialization vectors (upstream placeholders) ---
+
+[tests.MASTG-TEST-0309]            # static (best-effort: static/predictable IV)
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0309.md"
+
+[tests.MASTG-TEST-0310]            # dynamic -> static approximation (of 0309)
+type = "llm"
+category = "CRYPTO"
+prompt = "MASVS-CRYPTO/MASTG-TEST-0310.md"
+
+
+# ============================================================
+#  MASVS-NETWORK
+# ============================================================
+
+# --- MASWE-0050: cleartext traffic & insecure TLS versions ---
+
+[tests.MASTG-TEST-0217]            # static (insecure TLS versions in code)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0217.md"
+
+[tests.MASTG-TEST-0218]            # dynamic -> static approximation (of 0217)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0218.md"
+
+[tests.MASTG-TEST-0233]            # static (hardcoded HTTP URLs)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0233.md"
+
+[tests.MASTG-TEST-0235]            # static (cleartext config: manifest + NSC)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0235.md"
+
+[tests.MASTG-TEST-0236]            # dynamic -> static approximation (of 0235/0233)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0236.md"
+
+[tests.MASTG-TEST-0237]            # static (best-effort: cross-platform framework cleartext)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0237.md"
+
+[tests.MASTG-TEST-0238]            # dynamic -> static approximation (cleartext via network APIs)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0238.md"
+
+[tests.MASTG-TEST-0239]            # static (best-effort: low-level socket custom HTTP)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0239.md"
+
+# --- MASWE-0047: missing / broken certificate pinning ---
+
+[tests.MASTG-TEST-0242]            # static (missing pinning in NSC)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0242.md"
+
+[tests.MASTG-TEST-0243]            # static (expired NSC pins)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0243.md"
+
+[tests.MASTG-TEST-0244]            # dynamic -> static approximation (of 0242)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0244.md"
+
+# --- MASWE-0052: improper certificate / hostname / trust validation ---
+
+[tests.MASTG-TEST-0234]            # static (SSLSocket without HostnameVerifier)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0234.md"
+
+[tests.MASTG-TEST-0282]            # static (unsafe custom TrustManager)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0282.md"
+
+[tests.MASTG-TEST-0283]            # static (permissive HostnameVerifier)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0283.md"
+
+[tests.MASTG-TEST-0284]            # static (WebView onReceivedSslError proceed)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0284.md"
+
+[tests.MASTG-TEST-0285]            # static (minSdkVersion < 24 -> implicit user-CA trust)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0285.md"
+
+[tests.MASTG-TEST-0286]            # static (NSC trusts user CAs)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0286.md"
+
+[tests.MASTG-TEST-0295]            # static (GMS security provider not updated)
+type = "llm"
+category = "NETWORK"
+prompt = "MASVS-NETWORK/MASTG-TEST-0295.md"
+
+
+# ============================================================
+#  MASVS-AUTH
+# ============================================================
+# All five are static L2 biometric local-authentication checks.
+
+# --- MASWE-0045: weaker authentication fallback ---
+
+[tests.MASTG-TEST-0326]            # static (DEVICE_CREDENTIAL fallback)
+type = "llm"
+category = "AUTH"
+prompt = "MASVS-AUTH/MASTG-TEST-0326.md"
+
+# --- MASWE-0044: improper/bypassable biometric authentication ---
+
+[tests.MASTG-TEST-0327]            # static (event-bound vs crypto-bound auth)
+type = "llm"
+category = "AUTH"
+prompt = "MASVS-AUTH/MASTG-TEST-0327.md"
+
+[tests.MASTG-TEST-0329]            # static (setConfirmationRequired(false))
+type = "llm"
+category = "AUTH"
+prompt = "MASVS-AUTH/MASTG-TEST-0329.md"
+
+[tests.MASTG-TEST-0330]            # static (extended key auth validity duration)
+type = "llm"
+category = "AUTH"
+prompt = "MASVS-AUTH/MASTG-TEST-0330.md"
+
+# --- MASWE-0046: biometric enrollment changes ---
+
+[tests.MASTG-TEST-0328]            # static (setInvalidatedByBiometricEnrollment(false))
+type = "llm"
+category = "AUTH"
+prompt = "MASVS-AUTH/MASTG-TEST-0328.md"
+
+
+# ============================================================
+#  MASVS-PLATFORM
+# ============================================================
+
+# --- PLATFORM-1 (IPC): exported components, providers, PendingIntent ---
+
+# MASWE-0064: content providers
+[tests.MASTG-TEST-0355]            # static (unauthorized DB access via providers)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0355.md"
+
+[tests.MASTG-TEST-0356]            # dynamic -> static approximation (of 0355)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0356.md"
+
+[tests.MASTG-TEST-0357]            # static (FileProvider path oversharing)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0357.md"
+
+# MASWE-0119 / 0062 / 0063: exported activities / services / receivers
+[tests.MASTG-TEST-0364]            # static (exported unprotected activities)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0364.md"
+
+[tests.MASTG-TEST-0365]            # static (exported unprotected services)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0365.md"
+
+[tests.MASTG-TEST-0366]            # static (exported unprotected broadcast receivers)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0366.md"
+
+# MASWE-0066: PendingIntent (cross-listed upstream in MASVS-CODE; placed here)
+[tests.MASTG-TEST-0381]            # static (insecure PendingIntent creation)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0381.md"
+
+# --- PLATFORM-2 (WebViews) ---
+
+# MASWE-0069: WebView misconfiguration
+[tests.MASTG-TEST-0250]            # static (content provider access in WebViews)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0250.md"
+
+[tests.MASTG-TEST-0251]            # dynamic -> static approximation (of 0250)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0251.md"
+
+[tests.MASTG-TEST-0252]            # static (local file access in WebViews)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0252.md"
+
+[tests.MASTG-TEST-0253]            # dynamic -> static approximation (of 0252)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0253.md"
+
+[tests.MASTG-TEST-0334]            # static (addJavascriptInterface native bridge)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0334.md"
+
+# MASWE-0118: WebView data cleanup
+[tests.MASTG-TEST-0320]            # dynamic -> static approximation (storage cleanup)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0320.md"
+
+# --- PLATFORM-3 (UI) ---
+
+# MASWE-0053: sensitive data in UI (keyboard, masking, overlay)
+[tests.MASTG-TEST-0258]            # static (keyboard caching input types)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0258.md"
+
+[tests.MASTG-TEST-0316]            # static (unmasked password/OTP fields)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0316.md"
+
+[tests.MASTG-TEST-0340]            # static (overlay / tapjacking protections)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0340.md"
+
+# MASWE-0054: notifications
+[tests.MASTG-TEST-0315]            # static (sensitive data in notifications)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0315.md"
+
+# MASWE-0055: screenshots / screen capture
+[tests.MASTG-TEST-0291]            # static (FLAG_SECURE on sensitive screens)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0291.md"
+
+[tests.MASTG-TEST-0289]            # dynamic -> static approximation (backgrounding screenshots)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0289.md"
+
+[tests.MASTG-TEST-0292]            # static (best-effort: setRecentsScreenshotEnabled)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0292.md"
+
+[tests.MASTG-TEST-0293]            # static (best-effort: SurfaceView.setSecure)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0293.md"
+
+[tests.MASTG-TEST-0294]            # static (best-effort: Compose dialog SecureFlagPolicy)
+type = "llm"
+category = "PLATFORM"
+prompt = "MASVS-PLATFORM/MASTG-TEST-0294.md"
+
+
+# ============================================================
+#  MASVS-CODE
+# ============================================================
+# First programmatic handlers in this plan: the native-binary hardening
+# checks (0222 PIC, 0223 stack canaries) are deterministic reads of
+# native_binaries.json, so they run as Python handlers under functions/
+# (flat module names — the loader does not import nested category subdirs)
+# returning the same verdict dict shape as an LLM test.
+
+# --- MASWE-0116: native binary protection mechanisms (programmatic) ---
+
+[tests.MASTG-TEST-0222]            # programmatic (PIC/PIE from native_binaries.json)
+type = "programmatic"
+category = "CODE"
+handler = "code_pic_0222.run"
+
+[tests.MASTG-TEST-0223]            # programmatic (stack canaries from native_binaries.json)
+type = "programmatic"
+category = "CODE"
+handler = "code_canary_0223.run"
+
+# --- MASWE-0077: up-to-date platform version (CODE-1) ---
+
+[tests.MASTG-TEST-0245]            # static (runtime OS-version checks)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0245.md"
+
+# --- MASWE-0075: enforced app updates (CODE-2) ---
+
+[tests.MASTG-TEST-0382]            # dynamic -> static approximation (update enforcement)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0382.md"
+
+# --- MASWE-0076: dependencies with known vulnerabilities (CODE-3) ---
+
+[tests.MASTG-TEST-0272]            # static (best-effort SCA; needs Gradle/SCA tool)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0272.md"
+
+[tests.MASTG-TEST-0274]            # static (best-effort SCA; needs SBOM + SCA service)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0274.md"
+
+# --- MASWE-0088/0082/0086/0066/0083: untrusted-input handling (CODE-4) ---
+
+[tests.MASTG-TEST-0337]            # static (object deserialization of untrusted data)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0337.md"
+
+[tests.MASTG-TEST-0338]            # static (integrity/authenticity of local-storage data)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0338.md"
+
+[tests.MASTG-TEST-0339]            # static (SQL injection in content providers)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0339.md"
+
+[tests.MASTG-TEST-0372]            # static (implicit intents for internal communication)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0372.md"
+
+[tests.MASTG-TEST-0373]            # static (internal component unintentionally exported)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0373.md"
+
+[tests.MASTG-TEST-0374]            # static (implicit intents carrying sensitive extras)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0374.md"
+
+[tests.MASTG-TEST-0375]            # dynamic -> static approximation (intent-result validation)
+type = "llm"
+category = "CODE"
+prompt = "MASVS-CODE/MASTG-TEST-0375.md"
+
+# NOTE: MASTG-TEST-0381 (insecure PendingIntent) is cross-listed upstream in
+# both MASVS-CODE and MASVS-PLATFORM; it is registered once under PLATFORM.
+
+
+# ============================================================
+#  MASVS-RESILIENCE
+# ============================================================
+# Four deterministic checks run as programmatic handlers under functions/
+# (signature version/key-size, debuggable flag, native debug symbols) - they
+# read app_metadata.json / manifest_findings.json / native_binaries.json.
+# The rest are LLM prompts; the anti-X "detection" tests are PRESENCE tests
+# (fail when the defence is ABSENT) and dynamic ones are static approximations.
+
+# --- RESILIENCE-1: platform integrity (root / emulator / device lock) ---
+
+[tests.MASTG-TEST-0247]            # static (secure screen-lock detection refs)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0247.md"
+
+[tests.MASTG-TEST-0249]            # dynamic -> static approximation (of 0247)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0249.md"
+
+[tests.MASTG-TEST-0324]            # static (root detection refs)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0324.md"
+
+[tests.MASTG-TEST-0325]            # dynamic -> static approximation (of 0324)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0325.md"
+
+[tests.MASTG-TEST-0351]            # dynamic -> static approximation (emulator detection)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0351.md"
+
+# --- RESILIENCE-2: anti-tampering (signing / debuggable / StrictMode) ---
+
+[tests.MASTG-TEST-0224]            # programmatic (signature version; app_metadata.json)
+type = "programmatic"
+category = "RESILIENCE"
+handler = "res_sig_version_0224.run"
+
+[tests.MASTG-TEST-0225]            # programmatic (signature key size; app_metadata.json)
+type = "programmatic"
+category = "RESILIENCE"
+handler = "res_sig_keysize_0225.run"
+
+[tests.MASTG-TEST-0226]            # programmatic (debuggable flag; manifest_findings.json)
+type = "programmatic"
+category = "RESILIENCE"
+handler = "res_debuggable_0226.run"
+
+[tests.MASTG-TEST-0227]            # static (WebView debugging enabled)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0227.md"
+
+[tests.MASTG-TEST-0265]            # static (StrictMode references)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0265.md"
+
+[tests.MASTG-TEST-0263]            # dynamic -> static approximation (StrictMode logging)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0263.md"
+
+[tests.MASTG-TEST-0264]            # dynamic -> static approximation (StrictMode runtime)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0264.md"
+
+# --- RESILIENCE-3: anti-static analysis (symbols / obfuscation) ---
+
+[tests.MASTG-TEST-0288]            # programmatic (native debug symbols; native_binaries.json)
+type = "programmatic"
+category = "RESILIENCE"
+handler = "res_native_symbols_0288.run"
+
+[tests.MASTG-TEST-0368]            # static (obfuscation of Java/Kotlin security code)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0368.md"
+
+[tests.MASTG-TEST-0369]            # static (obfuscation of native security code)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0369.md"
+
+# --- RESILIENCE-4: anti-dynamic analysis (hook / debugger detection) ---
+
+[tests.MASTG-TEST-0341]            # dynamic -> static approximation (hook/instrumentation detection)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0341.md"
+
+[tests.MASTG-TEST-0352]            # static (debugging detection refs)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0352.md"
+
+[tests.MASTG-TEST-0353]            # dynamic -> static approximation (of 0352)
+type = "llm"
+category = "RESILIENCE"
+prompt = "MASVS-RESILIENCE/MASTG-TEST-0353.md"
+
+
+# ============================================================
+#  MASVS-PRIVACY
+# ============================================================
+# All static/LLM. The three permission placeholders (0255/0256/0257) are
+# implemented as best-effort static checks; 0206 and 0319 are dynamic tests
+# rendered as static approximations (PII / sensitive data reaching the wire).
+
+# --- MASWE-0117: permission minimization (PRIVACY-1) ---
+
+[tests.MASTG-TEST-0254]            # static (dangerous permissions vs feature justification)
+type = "llm"
+category = "PRIVACY"
+prompt = "MASVS-PRIVACY/MASTG-TEST-0254.md"
+
+[tests.MASTG-TEST-0255]            # static (best-effort: privacy-preserving alternatives)
+type = "llm"
+category = "PRIVACY"
+prompt = "MASVS-PRIVACY/MASTG-TEST-0255.md"
+
+[tests.MASTG-TEST-0257]            # static (best-effort: unused-permission auto-reset)
+type = "llm"
+category = "PRIVACY"
+prompt = "MASVS-PRIVACY/MASTG-TEST-0257.md"
+
+# --- MASWE-0117 (transparency) / MASWE-0112 / MASWE-0108 (PRIVACY-3) ---
+
+[tests.MASTG-TEST-0256]            # static (best-effort: permission rationale)
+type = "llm"
+category = "PRIVACY"
+prompt = "MASVS-PRIVACY/MASTG-TEST-0256.md"
+
+[tests.MASTG-TEST-0318]            # static (SDK APIs handling sensitive data)
+type = "llm"
+category = "PRIVACY"
+prompt = "MASVS-PRIVACY/MASTG-TEST-0318.md"
+
+[tests.MASTG-TEST-0319]            # dynamic -> static approximation (of 0318)
+type = "llm"
+category = "PRIVACY"
+prompt = "MASVS-PRIVACY/MASTG-TEST-0319.md"
+
+[tests.MASTG-TEST-0206]            # dynamic -> static approximation (undeclared PII in traffic)
+type = "llm"
+category = "PRIVACY"
+prompt = "MASVS-PRIVACY/MASTG-TEST-0206.md"
